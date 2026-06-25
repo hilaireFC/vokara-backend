@@ -42,7 +42,7 @@ async function blobToBuffer(blob) {
  * Returns { emotion, meme_idea, suggested_template, caption }
  */
 async function analyzeContext(text) {
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
   const prompt = `You are an expert meme analyst and internet culture specialist.
 Analyze the following text/conversation and respond ONLY with a valid JSON object.
@@ -82,7 +82,7 @@ Return this exact JSON structure (no markdown, no code fences, just raw JSON):
  * Roast a photo using Gemini vision.
  */
 async function roastPhoto(imageBuffer, mimeType) {
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
   const prompt =
     "Analyse cette photo avec humour et fais un 'clash' (roast) drôle et bienveillant sur la personne ou la situation. Sois piquant, créatif, mais jamais méchant. Réponds en français, maximum 3 phrases percutantes.";
@@ -186,7 +186,7 @@ async function faceSwap(sourceImageBuffer, targetImageBuffer, sourceMimeType, ta
  * Returns { template, topText, bottomText }
  */
 async function suggestMeme(text) {
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
   const prompt = `You are a meme expert. Given this situation description, pick the PERFECT classic meme template.
 
@@ -223,12 +223,9 @@ Respond ONLY with raw JSON (no markdown fences):
  * Returns audio as base64.
  */
 async function textToSpeech(text, voice = 'energetic') {
-  // facebook/mms-tts-eng for English, facebook/mms-tts-fra for French
-  // We'll use english as default since it's most reliable
-  const model = 'facebook/mms-tts-eng';
-
+  // Use espnet/kan-bayashi_ljspeech_vits - reliable HuggingFace TTS model
   const blob = await hf.textToSpeech({
-    model,
+    model: 'espnet/kan-bayashi_ljspeech_vits',
     inputs: text,
   });
 
