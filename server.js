@@ -190,7 +190,7 @@ app.post('/api/ai/remove-background', upload.single('image'), async (req, res) =
     }
 
     const imageBuffer = fs.readFileSync(req.file.path);
-    const base64Image = await aiService.removeBackground(imageBuffer);
+    const base64Image = await aiService.removeBackground(imageBuffer, req.file.path);
 
     cleanupFiles(req.file);
     return res.json({ image: base64Image });

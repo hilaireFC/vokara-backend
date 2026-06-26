@@ -37,7 +37,7 @@ async function blobToBuffer(blob) {
  */
 async function analyzeContext(text) {
   const completion = await groq.chat.completions.create({
-    model: 'llama3-70b-8192',
+    model: 'llama-3.3-70b-versatile',
     messages: [
       {
         role: 'system',
@@ -129,17 +129,26 @@ async function semanticEditImage(imageBuffer, instruction) {
  * Remove the background from an image using remove.bg API.
  * Returns the result image as base64.
  */
-async function removeBackground(imageBuffer) {
+async function removeBackground(imageBuffer, filePath) {
   if (!process.env.REMOVE_BG_API_KEY) {
     throw new Error('REMOVE_BG_API_KEY is not set.');
   }
 
   const FormData = require('form-data');
   const form = new FormData();
-  form.append('image_file', imageBuffer, {
-    filename: 'image.jpg',
-    contentType: 'image/jpeg',
-  });
+  
+  // Use file stream if path is provided, otherwise use buffer
+  if (filePath && fs.existsSync(filePath)) {
+    form.append('image_file', fs.createReadStream(filePath), {
+      filename: 'image.jpg',
+      contentType: 'image/jpeg',
+    });
+  } else {
+    form.append('image_file', imageBuffer, {
+      filename: 'image.jpg',
+      contentType: 'image/jpeg',
+    });
+  }
   form.append('size', 'auto');
 
   const response = await fetch('https://api.remove.bg/v1.0/removebg', {
@@ -198,7 +207,7 @@ async function faceSwap(sourceImageBuffer, targetImageBuffer, sourceMimeType, ta
  */
 async function suggestMeme(text) {
   const completion = await groq.chat.completions.create({
-    model: 'llama3-70b-8192',
+    model: 'llama-3.3-70b-versatile',
     messages: [
       {
         role: 'system',
