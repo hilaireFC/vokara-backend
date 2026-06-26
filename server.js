@@ -166,7 +166,8 @@ app.post('/api/ai/voice-to-text', upload.single('audio'), async (req, res) => {
 
     const audioBuffer = fs.readFileSync(req.file.path);
     const mimeType = req.file.mimetype || 'audio/mpeg';
-    const transcribedText = await aiService.voiceToText(audioBuffer, mimeType);
+    // Pass filePath so Groq Whisper can stream the file
+    const transcribedText = await aiService.voiceToText(audioBuffer, mimeType, req.file.path);
 
     cleanupFiles(req.file);
     return res.json({ text: transcribedText });
